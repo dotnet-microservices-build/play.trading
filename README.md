@@ -7,7 +7,7 @@ Play Economy Trading microservice
 ```powershell
 $env:GH_OWNER="dotnet-microservices-build"
 $env:GH_PAT="[PAT here]"
-
+$version="1.0.1"
 docker build --secret id=GH_OWNER --secret id=GH_PAT -t play.trading:$version .
 
 ```
@@ -16,6 +16,16 @@ docker build --secret id=GH_OWNER --secret id=GH_PAT -t play.trading:$version .
 
 ```powershell
 docker run -it --rm -p 5006:5006 --name trading -e MongoDbSettings__Host=mongo -e RabbitMQSettings__Host=rabbitmq --network playinfra_default play.trading:$version
+
+```
+
+### with azure service bus
+
+```powershell
+$cosmosDbConnString="[CONNECTION STRING HERE]"
+$serviceBusConnString="[CONNECTION STRING HERE]"
+
+docker run -it --rm -p 5006:5006 --name trading -e MongoDbSettings__ConnectionString=$cosmosDbConnString -e ServiceBusSettings__ConnectionString=$serviceBusConnString -e ServiceSettings__MessageBroker="servicebus" play.trading:$version
 
 ```
 
