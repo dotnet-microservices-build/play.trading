@@ -86,3 +86,38 @@ az keyvault update --name $kvName --resource-group $appname --enable-rbac-author
 
 az keyvault set-policy -n $kvName --secret-permissions get list --spn $IDENTITY_CLIENT_ID
 ```
+
+## Create the kubernetes namespace
+
+**kubernetes namespace** is a way to separate the resources that belong to different applications in a kubernetes cluster. Usually we would have one namespace per microservice. In a namespace we would put all the resources that belong to a particular microservice.
+
+```powershell
+$namespace="trading"
+kubectl create namespace $namespace
+```
+
+## Create the kubernetes pod
+
+```powershell
+kubectl apply -f ./kubernetes/trading.yaml -n $namespace
+
+# trouble shooting
+kubectl get pods -n $namespace
+kubectl logs identity-deployment-7b9fc5685b-28svn -n $namespace
+kubectl describe pod identity-deployment-7b9fc5685b-28svn -n $namespace
+kubectl describe pod identity-deployment-7b9fc5685b-28svn -n $namespace
+kubectl get events -n $namespace
+kubectl get services -n $namespace
+```
+
+## Establish the federated identity credential
+
+```powershell
+$AKS_OIDC_ISSUER=az aks show --name $appname --resource-group $appname --query "oidcIssuerProfile.issuerUrl" --output tsv
+```
+
+```powershell
+az identity federated-credential create --name $namespace --identity-name $namespace --resource-group $appname --issuer $AKS_OIDC_ISSUER --subject "system:serviceaccount:${namespace}:${namespace}-serviceaccount"
+```
+
+subject: is the identifier for the service account in the aks cluster
