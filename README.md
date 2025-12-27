@@ -67,3 +67,22 @@ docker tag play.trading:$version "$loginserver/play.trading:$version"
 #push the image
 docker push "$loginserver/play.trading:$version"
 ```
+
+### Creating the Azure Managed Identity and granting it access to Key Vault Secrets
+
+```powershell
+$namespace="trading"
+$kvName="$($appname)lumskv"
+
+az identity create --resource-group $appname --name $namespace
+$IDENTITY_CLIENT_ID=az identity show -g $appname -n $namespace --query clientId -o tsv
+
+# for RBAC
+az role assignment create --role "Key Vault Secrets Officer" --assignee <object-id-or-user-principal-name> --scope <key-vault-resource-id>
+
+
+# if currently RBAC but we need to update to access policy
+az keyvault update --name $kvName --resource-group $appname --enable-rbac-authorization false
+
+az keyvault set-policy -n $kvName --secret-permissions get list --spn $IDENTITY_CLIENT_ID
+```
