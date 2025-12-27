@@ -7,7 +7,7 @@ Play Economy Trading microservice
 ```powershell
 $env:GH_OWNER="dotnet-microservices-build"
 $env:GH_PAT="[PAT here]"
-$version="1.0.1"
+$version="1.0.2"
 docker build --secret id=GH_OWNER --secret id=GH_PAT -t play.trading:$version .
 
 ```
@@ -15,7 +15,7 @@ docker build --secret id=GH_OWNER --secret id=GH_PAT -t play.trading:$version .
 ```powershell
 $env:GH_OWNER="dotnet-microservices-build"
 $env:GH_PAT="[PAT here]"
-$version="1.0.1"
+$version="1.0.2"
 $loginserver="playeconomylumsacr.azurecr.io"
 
 docker build --secret id=GH_OWNER --secret id=GH_PAT -t "$loginserver/play.trading:$version" .
